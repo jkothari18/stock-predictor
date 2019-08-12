@@ -15,12 +15,4 @@ URLSession.shared.dataTask(with: url) {(data, response, error) in
     print(String(data: data, encoding: .utf8)!)
 }.resume()
 
-if let path = Bundle.main.path(forResource: "confidential", ofType: "json") {
-    print(path)
-    do {
-        let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-        print(data)
-    }
-}
-
 sleep(1)

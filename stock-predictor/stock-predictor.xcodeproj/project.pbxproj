@@ -23,7 +23,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		605066282301CB240038E4E9 /* confidential.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = confidential.json; sourceTree = "<group>"; };
 		60864FD62301B149009A3FE9 /* stock-predictor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "stock-predictor"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60864FD92301B149009A3FE9 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,7 +57,6 @@
 		60864FD82301B149009A3FE9 /* stock-predictor */ = {
 			isa = PBXGroup;
 			children = (
-				605066282301CB240038E4E9 /* confidential.json */,
 				60864FD92301B149009A3FE9 /* main.swift */,
 			);
 			path = "stock-predictor";
