@@ -43,7 +43,6 @@
 		60864FCD2301B149009A3FE9 = {
 			isa = PBXGroup;
 			children = (
-				602CAC1D2302201D00CC7236 /* Security.swift */,
 				60864FD82301B149009A3FE9 /* stock-predictor */,
 				60864FD72301B149009A3FE9 /* Products */,
 			);
@@ -60,6 +59,7 @@
 		60864FD82301B149009A3FE9 /* stock-predictor */ = {
 			isa = PBXGroup;
 			children = (
+				602CAC1D2302201D00CC7236 /* Security.swift */,
 				60864FD92301B149009A3FE9 /* main.swift */,
 			);
 			path = "stock-predictor";
