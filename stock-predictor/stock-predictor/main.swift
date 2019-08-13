@@ -8,18 +8,33 @@
 
 import Foundation
 
-let url = URL(string: "https://sandbox.iexapis.com/stable/stock/sq/quote?token=Tsk_c4ac493e5fce4aab9e71f9e911e5f482")!
+let SANDBOX_TOKEN = "Tsk_c4ac493e5fce4aab9e71f9e911e5f482"
 
-URLSession.shared.dataTask(with: url) {(data, response, error) in
-    guard let data = data else { return }
-    do {
-        let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
-        print(json)
-        let security = try JSONDecoder().decode(Security.self, from: data)
-        print(security)
-    } catch let jsonError {
-        print(jsonError)
-    }
-}.resume()
+func fetchBatchedSecurities(_ symbols: [String]) -> [Security] {
+    let url = "https://sandbox.iexapis.com/stable/stock/sq/quote?token=\(SANDBOX_TOKEN)"
+    
+    return []
+}
 
+func fetchSecurity(_ symbol: String) -> Security? {
+    let url = URL(string: "https://sandbox.iexapis.com/stable/stock/\(symbol)/quote?token=\(SANDBOX_TOKEN)")!
+    let semaphore = DispatchSemaphore(value: 0)
+    var security: Security? = nil
+    
+    URLSession.shared.dataTask(with: url) {(data, response, error) in
+        guard let data = data else { return }
+        do {
+            security = try JSONDecoder().decode(Security.self, from: data)
+        } catch let jsonError {
+            print("JSON error: \(jsonError)")
+        }
+        semaphore.signal()
+    }.resume()
+    
+    semaphore.wait()
+    return security
+}
+
+
+print(fetchSecurity("sq"))
 sleep(1)
