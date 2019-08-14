@@ -3,12 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		602CAC1E2302201D00CC7236 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602CAC1D2302201D00CC7236 /* Security.swift */; };
 		60864FDA2301B149009A3FE9 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60864FD92301B149009A3FE9 /* main.swift */; };
+		60864FEA230451FF009A3FE9 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 60864FE9230451FF009A3FE9 /* SQLite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,6 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60864FEA230451FF009A3FE9 /* SQLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +147,9 @@
 			dependencies = (
 			);
 			name = "stock-predictor";
+			packageProductDependencies = (
+				60864FE9230451FF009A3FE9 /* SQLite */,
+			);
 			productName = "stock-predictor";
 			productReference = 60864FD62301B149009A3FE9 /* stock-predictor */;
 			productType = "com.apple.product-type.tool";
@@ -173,6 +178,9 @@
 				Base,
 			);
 			mainGroup = 60864FCD2301B149009A3FE9;
+			packageReferences = (
+				60864FE8230451FF009A3FE9 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+			);
 			productRefGroup = 60864FD72301B149009A3FE9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -352,6 +360,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		60864FE8230451FF009A3FE9 /* XCRemoteSwiftPackageReference "SQLite.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.12.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		60864FE9230451FF009A3FE9 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 60864FE8230451FF009A3FE9 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 60864FCE2301B149009A3FE9 /* Project object */;
 }
