@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SQLite3
 
 let SANDBOX_TOKEN = "Tsk_c4ac493e5fce4aab9e71f9e911e5f482"
 
