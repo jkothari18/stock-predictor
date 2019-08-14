@@ -59,10 +59,74 @@
 		60864FD82301B149009A3FE9 /* stock-predictor */ = {
 			isa = PBXGroup;
 			children = (
-				602CAC1D2302201D00CC7236 /* Security.swift */,
+				60864FE72303DA3A009A3FE9 /* Database */,
+				60864FE02303D538009A3FE9 /* Analysis */,
+				60864FE62303D57A009A3FE9 /* Data Types */,
 				60864FD92301B149009A3FE9 /* main.swift */,
 			);
 			path = "stock-predictor";
+			sourceTree = "<group>";
+		};
+		60864FE02303D538009A3FE9 /* Analysis */ = {
+			isa = PBXGroup;
+			children = (
+				60864FE52303D564009A3FE9 /* General Trend */,
+				60864FE42303D55F009A3FE9 /* Sentiment */,
+				60864FE32303D54D009A3FE9 /* Anomaly Detection */,
+				60864FE22303D547009A3FE9 /* Pattern Detection */,
+				60864FE12303D541009A3FE9 /* Short Squeeze */,
+			);
+			path = Analysis;
+			sourceTree = "<group>";
+		};
+		60864FE12303D541009A3FE9 /* Short Squeeze */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Short Squeeze";
+			sourceTree = "<group>";
+		};
+		60864FE22303D547009A3FE9 /* Pattern Detection */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Pattern Detection";
+			sourceTree = "<group>";
+		};
+		60864FE32303D54D009A3FE9 /* Anomaly Detection */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Anomaly Detection";
+			sourceTree = "<group>";
+		};
+		60864FE42303D55F009A3FE9 /* Sentiment */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Sentiment;
+			sourceTree = "<group>";
+		};
+		60864FE52303D564009A3FE9 /* General Trend */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "General Trend";
+			sourceTree = "<group>";
+		};
+		60864FE62303D57A009A3FE9 /* Data Types */ = {
+			isa = PBXGroup;
+			children = (
+				602CAC1D2302201D00CC7236 /* Security.swift */,
+			);
+			path = "Data Types";
+			sourceTree = "<group>";
+		};
+		60864FE72303DA3A009A3FE9 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Database;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
