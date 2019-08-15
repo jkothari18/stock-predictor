@@ -10,6 +10,8 @@
 		602CAC1E2302201D00CC7236 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602CAC1D2302201D00CC7236 /* Security.swift */; };
 		60864FDA2301B149009A3FE9 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60864FD92301B149009A3FE9 /* main.swift */; };
 		60864FEA230451FF009A3FE9 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 60864FE9230451FF009A3FE9 /* SQLite */; };
+		60864FEC23051BF0009A3FE9 /* ShortSqueezeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60864FEB23051BF0009A3FE9 /* ShortSqueezeDetector.swift */; };
+		60864FEF23051C73009A3FE9 /* Detector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60864FEE23051C73009A3FE9 /* Detector.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +30,8 @@
 		602CAC1D2302201D00CC7236 /* Security.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Security.swift; sourceTree = "<group>"; };
 		60864FD62301B149009A3FE9 /* stock-predictor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "stock-predictor"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60864FD92301B149009A3FE9 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		60864FEB23051BF0009A3FE9 /* ShortSqueezeDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortSqueezeDetector.swift; sourceTree = "<group>"; };
+		60864FEE23051C73009A3FE9 /* Detector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Detector.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +76,7 @@
 		60864FE02303D538009A3FE9 /* Analysis */ = {
 			isa = PBXGroup;
 			children = (
+				60864FEE23051C73009A3FE9 /* Detector.swift */,
 				60864FE52303D564009A3FE9 /* General Trend */,
 				60864FE42303D55F009A3FE9 /* Sentiment */,
 				60864FE32303D54D009A3FE9 /* Anomaly Detection */,
@@ -84,6 +89,7 @@
 		60864FE12303D541009A3FE9 /* Short Squeeze */ = {
 			isa = PBXGroup;
 			children = (
+				60864FEB23051BF0009A3FE9 /* ShortSqueezeDetector.swift */,
 			);
 			path = "Short Squeeze";
 			sourceTree = "<group>";
@@ -197,6 +203,8 @@
 			files = (
 				60864FDA2301B149009A3FE9 /* main.swift in Sources */,
 				602CAC1E2302201D00CC7236 /* Security.swift in Sources */,
+				60864FEC23051BF0009A3FE9 /* ShortSqueezeDetector.swift in Sources */,
+				60864FEF23051C73009A3FE9 /* Detector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

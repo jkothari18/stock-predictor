@@ -38,5 +38,5 @@ func fetchSecurity(_ symbol: String) -> Security? {
 }
 
 
-fetchSecurity("sq")
+_ = fetchSecurity("sq")
 sleep(1)
