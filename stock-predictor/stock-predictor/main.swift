@@ -39,4 +39,7 @@ func fetchSecurity(_ symbol: String) -> Security? {
 
 
 _ = fetchSecurity("sq")
-sleep(1)
+
+let patternDetector: PatternDetector<Int> = PatternDetector(withPatternLength: 2, 3)
+let arr: [Int] = [1,0,0,1,1,1,0,1,0,1,0,1,0,0]
+print(patternDetector.detectPattern(for: arr, withBackfill: true))
