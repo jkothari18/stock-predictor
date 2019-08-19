@@ -11,6 +11,7 @@ import Foundation
 final class PatternDetector<T: Numeric> {
     
     private let TAG = "PatternDetector"
+    
     private var numRepetitions: Int = 0
     private var patternLength: Int = 0
     private var patternDuration: Int = 0
@@ -26,10 +27,10 @@ final class PatternDetector<T: Numeric> {
     }
     
     /// Returns an array of booleans indicating whether a pattern has been detected at a given index. A pattern is "detected" if the pattern has been observed 1 complete time, and any subsequent datapoints stay true to that pattern.
-    /// backfill = false                                               backfill = true
-    /// [1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0]           [1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0]
-    /// [F, F, F, F, F, F, F, F, F, F, F, T, T, F]              [F, F, F, F, F, T, T, T, T, T, T, T, T, F]
-    func detectPattern(for datapoints: [T], withBackfill shouldBackfill: Bool) -> [Bool] {
+    /// For numRepetitions = 3, patternLength = 2
+    /// [1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0]
+    /// [F, F, F, F, F, F, F, F, F, F, T, T, T, F]
+    func detectGenericPattern(for datapoints: [T]) -> [Bool] {
         var pattern = [Bool]()
         var isTracking = false
         var startIndex = 0
@@ -43,20 +44,11 @@ final class PatternDetector<T: Numeric> {
                     isTracking = true
                     startIndex = index - patternLength
                 }
-                let value = index - startIndex >= patternDuration
+                let value = (index + 1) - startIndex >= patternDuration
                 pattern.append(value)
             } else {
                 isTracking = false
                 pattern.append(false)
-            }
-        }
-        
-        if shouldBackfill {
-            print("\(TAG): backfilling array.")
-            for (index, _) in pattern[..<(pattern.count - patternDuration)].enumerated() {
-                if pattern[index + patternDuration] {
-                    pattern[index] = true
-                }
             }
         }
         
