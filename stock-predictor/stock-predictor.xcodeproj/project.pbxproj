@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		602CAC1E2302201D00CC7236 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602CAC1D2302201D00CC7236 /* Security.swift */; };
+		60388F61230F688000F73B34 /* DatabaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60388F60230F688000F73B34 /* DatabaseController.swift */; };
 		60864FDA2301B149009A3FE9 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60864FD92301B149009A3FE9 /* main.swift */; };
 		60864FEA230451FF009A3FE9 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 60864FE9230451FF009A3FE9 /* SQLite */; };
 		60864FEC23051BF0009A3FE9 /* ShortSqueezeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60864FEB23051BF0009A3FE9 /* ShortSqueezeDetector.swift */; };
@@ -33,6 +34,7 @@
 
 /* Begin PBXFileReference section */
 		602CAC1D2302201D00CC7236 /* Security.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Security.swift; sourceTree = "<group>"; };
+		60388F60230F688000F73B34 /* DatabaseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseController.swift; sourceTree = "<group>"; };
 		60864FD62301B149009A3FE9 /* stock-predictor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "stock-predictor"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60864FD92301B149009A3FE9 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		60864FEB23051BF0009A3FE9 /* ShortSqueezeDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortSqueezeDetector.swift; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 		60864FE72303DA3A009A3FE9 /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				60388F60230F688000F73B34 /* DatabaseController.swift */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -271,6 +274,7 @@
 				6086500B2308A72C009A3FE9 /* ShortDatasource.swift in Sources */,
 				608650092308A6CB009A3FE9 /* RESTNetworking.swift in Sources */,
 				602CAC1E2302201D00CC7236 /* Security.swift in Sources */,
+				60388F61230F688000F73B34 /* DatabaseController.swift in Sources */,
 				60864FF123077DDD009A3FE9 /* PatternDetector.swift in Sources */,
 				60864FEC23051BF0009A3FE9 /* ShortSqueezeDetector.swift in Sources */,
 				60864FEF23051C73009A3FE9 /* Detector.swift in Sources */,
