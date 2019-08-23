@@ -9,26 +9,26 @@
 import Foundation
 import SQLite3
 
-//print(RESTNetworking.fetchBatchedSecurities(["sq", "aapl", "fb", "msft", "hmny"]))
-
-/*
-let patternDetector: PatternDetector<Int> = PatternDetector(withPatternLength: 2, 3)
-let arr: [Int] = [1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0]
-print(patternDetector.detectGenericPattern(for: arr))
- */
+let sqSecurity = RESTNetworking.fetchSecurity("sq")!
+let securities = RESTNetworking.fetchBatchedSecurities(["sq", "aapl", "msft", "brk.a", "brk.b", "lyft"])
+let dateFormatter = DateFormatter()
+dateFormatter.dateFormat = "dd/MM/yyyy"
+let result = dateFormatter.string(from: Date())
 
 let database = DatabaseController.shared
 if let db = database.initDatabase() {
-    let createTableString = "CREATE TABLE daily_stock(id INT PRIMARY KEY NOT NULL, ticker CHAR(255), open_price REAL);"
+    let createTableString = "CREATE TABLE IF NOT EXISTS daily_stock ( date CHAR(255), ticker CHAR(255), open_price REAL);"
     database.createTable(inDatabase: db, withString: createTableString)
-    let insertString = "INSERT INTO daily_stock(id, ticker, open_price) VALUES (?, ?, ?);"
-    database.insert(insertString, into: db, {(insertStatement: OpaquePointer?) -> Void in
-        let id: Int32 = 100
-        let ticker: NSString = "SQ"
-        let open_price: Double = 74.32
-        
-        sqlite3_bind_int(insertStatement, 1, id)
-        sqlite3_bind_text(insertStatement, 2, ticker.utf8String, -1, nil)
-        sqlite3_bind_double(insertStatement, 3, open_price)
-    })
+    
+    let insertString = "INSERT INTO daily_stock (date, ticker, open_price) VALUES (?, ?, ?);"
+    for security in securities {
+        database.insert(insertString, into: db, withAction: {(insertStatement: OpaquePointer?) -> Void in
+            let date: NSString = NSString(string: result)
+            let ticker: NSString = NSString(string: security.symbol)
+            let open_price: Double = security.open
+            sqlite3_bind_text(insertStatement, 1, date.utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 2, ticker.utf8String, -1, nil)
+            sqlite3_bind_double(insertStatement, 3, open_price)
+        })
+    }
 }

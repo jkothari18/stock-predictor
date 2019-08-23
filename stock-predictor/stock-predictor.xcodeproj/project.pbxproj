@@ -88,11 +88,11 @@
 		60864FD82301B149009A3FE9 /* stock-predictor */ = {
 			isa = PBXGroup;
 			children = (
+				608F53A8230F7FFF0088B2A3 /* Networking */,
 				60864FE72303DA3A009A3FE9 /* Database */,
 				60864FE02303D538009A3FE9 /* Analysis */,
 				60864FE62303D57A009A3FE9 /* Data Types */,
 				60864FD92301B149009A3FE9 /* main.swift */,
-				608650082308A6CB009A3FE9 /* RESTNetworking.swift */,
 			);
 			path = "stock-predictor";
 			sourceTree = "<group>";
@@ -172,6 +172,14 @@
 				608650032307C961009A3FE9 /* Info.plist */,
 			);
 			path = "stock-predictor-test";
+			sourceTree = "<group>";
+		};
+		608F53A8230F7FFF0088B2A3 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				608650082308A6CB009A3FE9 /* RESTNetworking.swift */,
+			);
+			path = Networking;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -20,12 +20,13 @@ class DatabaseController {
     func initDatabase() -> OpaquePointer? {
         var db: OpaquePointer? = nil
         if let prefix = ProcessInfo.processInfo.environment["STOCK_PRED_DB"] {
-            let path = URL(fileURLWithPath: "\(prefix)/StockPredictor")
-            if sqlite3_open(path.absoluteString, &db) == SQLITE_OK {
+            let path = URL(fileURLWithPath: "\(prefix)/StockPredictor.sqlite3")
+            let openResult = sqlite3_open(path.absoluteString, &db)
+            if openResult == SQLITE_OK {
                 print("Successfully opened db at: \(path)")
                 return db
             } else {
-                print("Failed to open db at: \(path)")
+                print("Failed to open db at: \(path) with error: \(openResult)")
             }
         }
         return nil
@@ -33,31 +34,35 @@ class DatabaseController {
     
     func createTable(inDatabase db: OpaquePointer, withString createString: String) {
         var createTableStatement: OpaquePointer? = nil
-        if sqlite3_prepare_v2(db, createString, -1, &createTableStatement, nil) == SQLITE_OK {
-            if sqlite3_step(createTableStatement) == SQLITE_DONE {
+        let prepareResult = sqlite3_prepare_v2(db, createString, -1, &createTableStatement, nil)
+        if prepareResult == SQLITE_OK {
+            let stepResult = sqlite3_step(createTableStatement)
+            if stepResult == SQLITE_DONE {
                 print("Successfully created table")
             } else {
-                print("Table could not be created.")
+                print("Table could not be created with error: \(stepResult).")
             }
         } else {
-            print("CREATE TABLE statement could not be prepared.")
+            print("CREATE TABLE statement could not be prepared with error: \(prepareResult).")
         }
         sqlite3_finalize(createTableStatement)
     }
     
-    func insert(_ statement: String, into db: OpaquePointer, _ handler: @escaping (OpaquePointer?) -> Void) {
+    func insert(_ statement: String, into db: OpaquePointer, withAction handler: (OpaquePointer?) -> Void) {
         var insertStatement: OpaquePointer? = nil
         
-        if sqlite3_prepare_v2(db, statement, -1, &insertStatement, nil) == SQLITE_OK {
+        let prepareResult = sqlite3_prepare_v2(db, statement, -1, &insertStatement, nil)
+        if prepareResult == SQLITE_OK {
             handler(insertStatement)
             
-            if sqlite3_step(insertStatement) == SQLITE_DONE {
+            let stepResult = sqlite3_step(insertStatement)
+            if stepResult == SQLITE_DONE {
                 print("Successfully inserted row.")
             } else {
-                print("Could not insert row.")
+                print("Could not insert row with error: \(stepResult).")
             }
         } else {
-            print("INSERT statement could not be prepared.")
+            print("INSERT statement could not be prepared with error: \(prepareResult).")
         }
         sqlite3_finalize(insertStatement)
     }

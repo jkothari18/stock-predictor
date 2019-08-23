@@ -13,10 +13,13 @@ final class RESTNetworking {
     static let TAG = "RESTNetworking"
     static let IEX_SANDBOX_TOKEN = "Tsk_c4ac493e5fce4aab9e71f9e911e5f482"
     
-    static func fetchBatchedSecurities(_ symbols: [String]) -> [Security?] {
-        var securities = [Security?]()
+    static func fetchBatchedSecurities(_ symbols: [String]) -> [Security] {
+        var securities = [Security]()
         symbols.forEach { (symbol) in
-            securities.append(fetchSecurity(symbol))
+            let security = fetchSecurity(symbol)
+            if security != nil {
+                securities.append(security!)
+            }
         }
         
         return securities
