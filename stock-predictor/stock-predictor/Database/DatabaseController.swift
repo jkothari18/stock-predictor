@@ -9,13 +9,9 @@
 import Foundation
 import SQLite3
 
-class DatabaseController {
+final class DatabaseController {
     
     static let shared = DatabaseController()
-    
-    private init() {
-        // init
-    }
     
     func initDatabase() -> OpaquePointer? {
         var db: OpaquePointer? = nil
@@ -40,10 +36,10 @@ class DatabaseController {
             if stepResult == SQLITE_DONE {
                 print("Successfully created table")
             } else {
-                print("Table could not be created with error: \(stepResult).")
+                print("Table could not be created with error: \(stepResult)")
             }
         } else {
-            print("CREATE TABLE statement could not be prepared with error: \(prepareResult).")
+            print("CREATE TABLE statement could not be prepared with error: \(prepareResult)")
         }
         sqlite3_finalize(createTableStatement)
     }
@@ -57,12 +53,12 @@ class DatabaseController {
             
             let stepResult = sqlite3_step(insertStatement)
             if stepResult == SQLITE_DONE {
-                print("Successfully inserted row.")
+                print("Successfully inserted row")
             } else {
-                print("Could not insert row with error: \(stepResult).")
+                print("Could not insert row with error: \(stepResult)")
             }
         } else {
-            print("INSERT statement could not be prepared with error: \(prepareResult).")
+            print("INSERT statement could not be prepared with error: \(prepareResult)")
         }
         sqlite3_finalize(insertStatement)
     }

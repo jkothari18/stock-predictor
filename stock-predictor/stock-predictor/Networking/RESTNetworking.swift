@@ -47,6 +47,10 @@ final class RESTNetworking {
         return security
     }
     
+    static func fetchShortData(forSymbol symbol: String) -> ShortDatasource? {
+        return ShortDatasource()
+    }
+    
     static func fetchBatchedShortData(forSymbols symbols: [String]) -> [ShortDatasource?] {
         var securities = [ShortDatasource?]()
         symbols.forEach { (symbol) in
@@ -54,10 +58,6 @@ final class RESTNetworking {
         }
         
         return securities
-    }
-    
-    static func fetchShortData(forSymbol symbol: String) -> ShortDatasource? {
-        return ShortDatasource()
     }
     
 }
