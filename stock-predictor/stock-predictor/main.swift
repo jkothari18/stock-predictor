@@ -13,7 +13,7 @@ let sqSecurity = RESTNetworking.fetchSecurity("sq")!
 let securities = RESTNetworking.fetchBatchedSecurities(["sq", "aapl", "msft", "brk.a", "brk.b", "lyft"])
 let dateFormatter = DateFormatter()
 dateFormatter.dateFormat = "dd/MM/yyyy"
-let result = dateFormatter.string(from: Date()) 
+let result = dateFormatter.string(from: Date())
 
 let database = DatabaseController.shared
 if let db = database.initDatabase() {

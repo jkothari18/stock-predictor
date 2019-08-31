@@ -59,7 +59,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "STOCK_PRED_DB"
-            value = "/Users/ryanelliott/Documents/dev/data/stock-predictor"
+            value = "/Users/ryanelliott/Documents/dev/stock-predictor/data"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
