@@ -18,6 +18,7 @@
 		608650072307C9A2009A3FE9 /* PatternDetector+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60864FF92307C915009A3FE9 /* PatternDetector+Test.swift */; };
 		608650092308A6CB009A3FE9 /* RESTNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608650082308A6CB009A3FE9 /* RESTNetworking.swift */; };
 		6086500B2308A72C009A3FE9 /* ShortDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6086500A2308A72C009A3FE9 /* ShortDatasource.swift */; };
+		60B57E8D231B78C5006DE505 /* HistoricData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B57E8C231B78C5006DE505 /* HistoricData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,6 +47,7 @@
 		608650032307C961009A3FE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		608650082308A6CB009A3FE9 /* RESTNetworking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RESTNetworking.swift; sourceTree = "<group>"; };
 		6086500A2308A72C009A3FE9 /* ShortDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortDatasource.swift; sourceTree = "<group>"; };
+		60B57E8C231B78C5006DE505 /* HistoricData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +154,7 @@
 			children = (
 				602CAC1D2302201D00CC7236 /* Security.swift */,
 				6086500A2308A72C009A3FE9 /* ShortDatasource.swift */,
+				60B57E8C231B78C5006DE505 /* HistoricData.swift */,
 			);
 			path = "Data Types";
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 				602CAC1E2302201D00CC7236 /* Security.swift in Sources */,
 				60388F61230F688000F73B34 /* DatabaseController.swift in Sources */,
 				60864FF123077DDD009A3FE9 /* PatternDetector.swift in Sources */,
+				60B57E8D231B78C5006DE505 /* HistoricData.swift in Sources */,
 				60864FEC23051BF0009A3FE9 /* ShortSqueezeDetector.swift in Sources */,
 				60864FEF23051C73009A3FE9 /* Detector.swift in Sources */,
 			);

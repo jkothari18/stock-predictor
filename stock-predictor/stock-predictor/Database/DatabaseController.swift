@@ -11,6 +11,8 @@ import SQLite3
 
 final class DatabaseController {
     
+    static let DAILY_TABLE_NAME = "daily_stock"
+    
     static let shared = DatabaseController()
     
     func initDatabase() -> OpaquePointer? {
@@ -46,7 +48,6 @@ final class DatabaseController {
     
     func insert(_ statement: String, into db: OpaquePointer, withAction handler: (OpaquePointer?) -> Void) {
         var insertStatement: OpaquePointer? = nil
-        
         let prepareResult = sqlite3_prepare_v2(db, statement, -1, &insertStatement, nil)
         if prepareResult == SQLITE_OK {
             handler(insertStatement)
@@ -61,6 +62,35 @@ final class DatabaseController {
             print("INSERT statement could not be prepared with error: \(prepareResult)")
         }
         sqlite3_finalize(insertStatement)
+    }
+    
+    // TODO: - This is broken. I had no idea how to execute a statment and get data from a SQLite database in Swift at the time of this writing
+    func execute(_ statement: String, on db: OpaquePointer) -> Any {
+        var executeStatement: OpaquePointer? = nil
+        let prepareResult = sqlite3_prepare_v2(db, statement, -1, &executeStatement, nil)
+        if prepareResult == SQLITE_OK {
+            let stepResult = sqlite3_step(executeStatement)
+            while (stepResult == sqlite3_step(executeStatement)) {
+                let ticker = sqlite3_column_int(executeStatement, 1)
+                print(ticker)
+            }
+        }
+        
+        return "HI"
+    }
+    
+    // TODO: - Turn this into a batched request to vastly improve SQLite performance
+    func getDailyHistoricData(for symbol: String) -> [HistoricData] {
+        guard let db = initDatabase() else { return [] }
+//        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.DAILY_TABLE_NAME) WHERE ticker EQUALS \(symbol)"
+        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.DAILY_TABLE_NAME)"
+        let rawData = execute(getDataForSecurityString, on: db)
+        
+        return parseRawSQLHistoricData(result)
+    }
+    
+    private func parseRawSQLHistoricData(_ rawData: Any) -> [HistoricData] {
+        return []
     }
     
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class PatternDetector<T: Numeric> {
+final class PatternDetector<T: Numeric>: Detector {
     
     private let TAG = "PatternDetector"
     
@@ -53,6 +53,10 @@ final class PatternDetector<T: Numeric> {
         }
         
         return pattern
+    }
+    
+    func generalizedMovement() -> GeneralizedMovement {
+        return .neutral
     }
     
 }

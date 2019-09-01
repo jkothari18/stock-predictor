@@ -32,7 +32,7 @@ final class RESTNetworking {
         
         URLSession.shared.dataTask(with: url) {(data, response, error) in
             guard let data = data else {
-                print("\(TAG): error fetching data for security \(symbol)")
+                print("\(TAG): error fetching data for security \(symbol): \(String(describing: error))")
                 return
             }
             do {
