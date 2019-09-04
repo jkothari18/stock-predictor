@@ -35,9 +35,7 @@ final class DatabaseController {
         let prepareResult = sqlite3_prepare_v2(db, createString, -1, &createTableStatement, nil)
         if prepareResult == SQLITE_OK {
             let stepResult = sqlite3_step(createTableStatement)
-            if stepResult == SQLITE_DONE {
-                print("Successfully created table")
-            } else {
+            if stepResult != SQLITE_DONE {
                 print("Table could not be created with error: \(stepResult)")
             }
         } else {
@@ -46,47 +44,54 @@ final class DatabaseController {
         sqlite3_finalize(createTableStatement)
     }
     
-    func insert(_ statement: String, into db: OpaquePointer, withAction handler: (OpaquePointer?) -> Void) {
-        var insertStatement: OpaquePointer? = nil
-        let prepareResult = sqlite3_prepare_v2(db, statement, -1, &insertStatement, nil)
+    func replace(_ statement: String, into db: OpaquePointer, withAction handler: (OpaquePointer?) -> Void) {
+        var replaceStatement: OpaquePointer? = nil
+        let prepareResult = sqlite3_prepare_v2(db, statement, -1, &replaceStatement, nil)
         if prepareResult == SQLITE_OK {
-            handler(insertStatement)
+            handler(replaceStatement)
             
-            let stepResult = sqlite3_step(insertStatement)
-            if stepResult == SQLITE_DONE {
-                print("Successfully inserted row")
-            } else {
+            let stepResult = sqlite3_step(replaceStatement)
+            if stepResult != SQLITE_DONE {
                 print("Could not insert row with error: \(stepResult)")
             }
         } else {
-            print("INSERT statement could not be prepared with error: \(prepareResult)")
+            print("REPLACE statement could not be prepared with error: \(prepareResult)")
         }
-        sqlite3_finalize(insertStatement)
+        sqlite3_finalize(replaceStatement)
     }
     
-    // TODO: - This is broken. I had no idea how to execute a statment and get data from a SQLite database in Swift at the time of this writing
-    func execute(_ statement: String, on db: OpaquePointer) -> Any {
+    // TODO: - Implement callback for the while loop part
+    func execute(_ statement: String, on db: OpaquePointer, withAction handler: (OpaquePointer?) -> Void) {
+        print(statement)
         var executeStatement: OpaquePointer? = nil
         let prepareResult = sqlite3_prepare_v2(db, statement, -1, &executeStatement, nil)
         if prepareResult == SQLITE_OK {
-            let stepResult = sqlite3_step(executeStatement)
-            while (stepResult == sqlite3_step(executeStatement)) {
-                let ticker = sqlite3_column_int(executeStatement, 1)
-                print(ticker)
-            }
+            handler(executeStatement)
+        } else {
+            print("EXECUTE statement could not be prepared with error: \(prepareResult)")
         }
-        
-        return "HI"
     }
     
     // TODO: - Turn this into a batched request to vastly improve SQLite performance
-    func getDailyHistoricData(for symbol: String) -> [HistoricData] {
-        guard let db = initDatabase() else { return [] }
-//        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.DAILY_TABLE_NAME) WHERE ticker EQUALS \(symbol)"
-        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.DAILY_TABLE_NAME)"
-        let rawData = execute(getDataForSecurityString, on: db)
+    func getDailyHistoricData(for security: Security) -> HistoricData? {
+        guard let db = initDatabase() else { return nil }
+        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.DAILY_TABLE_NAME) WHERE ticker LIKE '\(security.symbol)'"
         
-        return parseRawSQLHistoricData(result)
+        var dailyData = [HistoricDailyData]()
+        execute(getDataForSecurityString, on: db) { (executeStatement) in
+            while sqlite3_step(executeStatement) == SQLITE_ROW {
+                let dateFormatter = Date.getBasicDateFormatter()
+                guard let date = dateFormatter.date(from: String(cString: sqlite3_column_text(executeStatement, 0))) else { return }
+                let ticker = String(cString: sqlite3_column_text(executeStatement, 1))
+                let open = sqlite3_column_double(executeStatement, 2)
+                let historicData = HistoricDailyData(ticker: ticker, open: open, close: 0, volume: 0, low: 0, high: 0, date: date)
+                dailyData.append(historicData)
+            }
+        }
+        
+        var historicData = HistoricData(security: security, dailyData: dailyData)
+        historicData.dailyData.sort(by: {$0.date < $1.date})
+        return historicData
     }
     
     private func parseRawSQLHistoricData(_ rawData: Any) -> [HistoricData] {

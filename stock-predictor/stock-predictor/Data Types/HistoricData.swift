@@ -8,7 +8,17 @@
 
 import Foundation
 
-internal struct HistoricDailyData {
+struct HistoricData {
+    
+    let security: Security
+    
+    var dailyData: [HistoricDailyData] = []
+    
+}
+
+struct HistoricDailyData {
+    
+    var ticker: String
     
     var open: Double
     
@@ -21,17 +31,5 @@ internal struct HistoricDailyData {
     var high: Double
     
     var date: Date
-    
-}
-
-struct HistoricData {
-    
-    let security: Security
-    
-    var dailyData: [HistoricDailyData] = []
-    
-    init(withSecurity security: Security) {
-        self.security = security
-    }
     
 }
