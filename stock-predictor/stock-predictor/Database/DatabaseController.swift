@@ -16,11 +16,14 @@ enum DatabaseMode {
 final class DatabaseController {
     
     static let DAILY_TABLE_NAME = "daily_stock"
+    static let GENERAL_INFO_TABLE_NAME = "general_info"
     static let HISTORICAL_DAILY_DATA_TABLE = "historical_daily_data"
     
     static let shared = DatabaseController()
     
     var mode: DatabaseMode = .single
+    
+    // MARK: - Initialization
     
     func initDatabase() -> OpaquePointer? {
         var db: OpaquePointer? = nil
@@ -36,6 +39,87 @@ final class DatabaseController {
         }
         return nil
     }
+    
+    // MARK: - General Stock Data
+    
+    /// Inserts symbol, companyName, averageVolume, marketCap, week52High, and week52Low into database.
+    func updateSecurity(for security: Security) {
+        let symbol: NSString = NSString(string: security.symbol)
+        let companyName: NSString = NSString(string: security.companyName ?? "")
+        let averageVolume = security.averageVolume ?? 0
+        let marketCap = security.marketCap ?? 0
+        let week52High = security.week52High ?? 0.0
+        let week52Low = security.week52Low ?? 0.0
+        
+        guard let db = initDatabase() else { return }
+        let createTableString = "CREATE TABLE IF NOT EXISTS \(DatabaseController.GENERAL_INFO_TABLE_NAME) ( ticker CHAR(255), companyName CHAR(255), averageVolume INTEGER, marketCap INTEGER, week52High REAL, week52Low REAL, UNIQUE(ticker) ON CONFLICT REPLACE);"
+        createTable(inDatabase: db, withString: createTableString)
+        
+        let replaceString = "INSERT INTO \(DatabaseController.GENERAL_INFO_TABLE_NAME) (ticker, companyName, averageVolume, marketCap, week52High, week52Low) VALUES (?, ?, ?, ?, ?, ?);"
+        replace(replaceString, into: db) { (insertStatement: OpaquePointer?) in
+            sqlite3_bind_text(insertStatement, 1, symbol.utf8String, -1, nil)
+            sqlite3_bind_text(insertStatement, 2, companyName.utf8String, -1, nil)
+            sqlite3_bind_int64(insertStatement, 3, Int64(averageVolume))
+            sqlite3_bind_int64(insertStatement, 4, Int64(marketCap))
+            sqlite3_bind_double(insertStatement, 5, week52High)
+            sqlite3_bind_double(insertStatement, 6, week52Low)
+        }
+    }
+    
+    // MARK: - Historical Data
+    
+    func updateHistoricalData(for security: Security) {
+        guard let historicalData = security.historicalData else { return }
+        guard let db = initDatabase() else { return }
+        let createTableString = "CREATE TABLE IF NOT EXISTS \(DatabaseController.HISTORICAL_DAILY_DATA_TABLE) ( ticker CHAR(255), date CHAR(255), open REAL, high REAL, low REAL, close REAL, volume INTEGER, UNIQUE (ticker, date) ON CONFLICT REPLACE);"
+        createTable(inDatabase: db, withString: createTableString)
+        
+        let replaceString = "INSERT INTO \(DatabaseController.HISTORICAL_DAILY_DATA_TABLE) (ticker, date, open, high, low, close, volume) VALUES (?, ?, ?, ?, ?, ?, ?);"
+        for dailyData in historicalData.dailyData {
+            replace(replaceString, into: db, withAction: {(insertStatement: OpaquePointer?) -> Void in
+                let ticker: NSString = NSString(string: security.symbol)
+                let formatter = Date.getBasicDateFormatter()
+                let result = formatter.string(from: dailyData.date)
+                let date: NSString = NSString(string: result)
+                
+                sqlite3_bind_text(insertStatement, 1, ticker.utf8String, -1, nil)
+                sqlite3_bind_text(insertStatement, 2, date.utf8String, -1, nil)
+                sqlite3_bind_double(insertStatement, 3, dailyData.open)
+                sqlite3_bind_double(insertStatement, 4, dailyData.high)
+                sqlite3_bind_double(insertStatement, 5, dailyData.low)
+                sqlite3_bind_double(insertStatement, 6, dailyData.close)
+                sqlite3_bind_int(insertStatement, 7, Int32(dailyData.volume))
+            })
+        }
+    }
+    
+    // TODO: - Turn this into a batched request to vastly improve SQLite performance
+    func getDailyHistoricData(for security: Security) -> HistoricData? {
+        guard let db = initDatabase() else { return nil }
+        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.HISTORICAL_DAILY_DATA_TABLE) WHERE ticker LIKE '\(security.symbol)';"
+        
+        var dailyData = [HistoricDailyData]()
+        execute(getDataForSecurityString, on: db) { (executeStatement) in
+            while sqlite3_step(executeStatement) == SQLITE_ROW {
+                let dateFormatter = Date.getBasicDateFormatter()
+                let ticker = String(cString: sqlite3_column_text(executeStatement, 0))
+                guard let date = dateFormatter.date(from: String(cString: sqlite3_column_text(executeStatement, 1))) else { return }
+                let open = sqlite3_column_double(executeStatement, 2)
+                let high = sqlite3_column_double(executeStatement, 3)
+                let low = sqlite3_column_double(executeStatement, 4)
+                let close = sqlite3_column_double(executeStatement, 5)
+                let volume = sqlite3_column_int(executeStatement, 6)
+                let historicData = HistoricDailyData(ticker: ticker, date: date, open: open, close: close, volume: Int(volume), low: low, high: high)
+                dailyData.append(historicData)
+            }
+        }
+        
+        var historicData = HistoricData(security: security, dailyData: dailyData)
+        historicData.dailyData.sort(by: {$0.date < $1.date})
+        return historicData
+    }
+    
+    // MARK: - Helpers
     
     func createTable(inDatabase db: OpaquePointer, withString createString: String) {
         var createTableStatement: OpaquePointer? = nil
@@ -67,7 +151,6 @@ final class DatabaseController {
         sqlite3_finalize(replaceStatement)
     }
     
-    // TODO: - Implement callback for the while loop part
     func execute(_ statement: String, on db: OpaquePointer, withAction handler: (OpaquePointer?) -> Void) {
         var executeStatement: OpaquePointer? = nil
         let prepareResult = sqlite3_prepare_v2(db, statement, -1, &executeStatement, nil)
@@ -75,57 +158,6 @@ final class DatabaseController {
             handler(executeStatement)
         } else {
             print("EXECUTE statement could not be prepared with error: \(prepareResult)")
-        }
-    }
-    
-    // TODO: - Turn this into a batched request to vastly improve SQLite performance
-    func getDailyHistoricData(for security: Security) -> HistoricData? {
-        guard let db = initDatabase() else { return nil }
-        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.HISTORICAL_DAILY_DATA_TABLE) WHERE ticker LIKE '\(security.symbol)';"
-        
-        var dailyData = [HistoricDailyData]()
-        execute(getDataForSecurityString, on: db) { (executeStatement) in
-            while sqlite3_step(executeStatement) == SQLITE_ROW {
-                let dateFormatter = Date.getBasicDateFormatter()
-                let ticker = String(cString: sqlite3_column_text(executeStatement, 0))
-                guard let date = dateFormatter.date(from: String(cString: sqlite3_column_text(executeStatement, 1))) else { return }
-                let open = sqlite3_column_double(executeStatement, 2)
-                let high = sqlite3_column_double(executeStatement, 3)
-                let low = sqlite3_column_double(executeStatement, 4)
-                let close = sqlite3_column_double(executeStatement, 5)
-                let volume = sqlite3_column_int(executeStatement, 6)
-                let historicData = HistoricDailyData(ticker: ticker, date: date, open: open, close: close, volume: Int(volume), low: low, high: high)
-                dailyData.append(historicData)
-            }
-        }
-        
-        var historicData = HistoricData(security: security, dailyData: dailyData)
-        historicData.dailyData.sort(by: {$0.date < $1.date})
-        return historicData
-    }
-    
-    func updateHistoricalData(for security: Security) {
-        guard let historicalData = security.historicalData else { return }
-        guard let db = initDatabase() else { return }
-        let createTableString = "CREATE TABLE IF NOT EXISTS \(DatabaseController.HISTORICAL_DAILY_DATA_TABLE) ( ticker CHAR(255), date CHAR(255), open REAL, high REAL, low REAL, close REAL, volume INTEGER, UNIQUE (ticker, date) ON CONFLICT REPLACE);"
-        createTable(inDatabase: db, withString: createTableString)
-        
-        let replaceString = "INSERT INTO \(DatabaseController.HISTORICAL_DAILY_DATA_TABLE) (ticker, date, open, high, low, close, volume) VALUES (?, ?, ?, ?, ?, ?, ?);"
-        for dailyData in historicalData.dailyData {
-            replace(replaceString, into: db, withAction: {(insertStatement: OpaquePointer?) -> Void in
-                let ticker: NSString = NSString(string: security.symbol)
-                let formatter = Date.getBasicDateFormatter()
-                let result = formatter.string(from: dailyData.date)
-                let date: NSString = NSString(string: result)
-                
-                sqlite3_bind_text(insertStatement, 1, ticker.utf8String, -1, nil)
-                sqlite3_bind_text(insertStatement, 2, date.utf8String, -1, nil)
-                sqlite3_bind_double(insertStatement, 3, dailyData.open)
-                sqlite3_bind_double(insertStatement, 4, dailyData.high)
-                sqlite3_bind_double(insertStatement, 5, dailyData.low)
-                sqlite3_bind_double(insertStatement, 6, dailyData.close)
-                sqlite3_bind_int(insertStatement, 7, Int32(dailyData.volume))
-            })
         }
     }
     

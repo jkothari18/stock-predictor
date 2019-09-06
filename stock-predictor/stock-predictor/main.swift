@@ -9,7 +9,9 @@
 import Foundation
 import SQLite3
 
-let testSecurity = Security(symbol: "amd")
+if let security = RESTNetworking.fetchSecurity("sq") {
+    DatabaseController.shared.updateSecurity(for: security)
+}
 
 //RESTNetworking.fetchHistoricalDailyData(for: "sq")
 

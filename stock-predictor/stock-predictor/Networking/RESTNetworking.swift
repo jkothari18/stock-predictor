@@ -21,7 +21,6 @@ private enum HistoricalDailyKeys: String {
 final class MinimalSecurity: Decodable {
     
     var symbol: String
-    
     var name: String
     
 }
