@@ -9,15 +9,16 @@
 import Foundation
 import SQLite3
 
-if let security = RESTNetworking.fetchSecurity("sq") {
-    DatabaseController.shared.updateSecurity(for: security)
-}
-
+//if let security = RESTNetworking.fetchSecurity("sq") {
+//    DatabaseController.shared.updateSecurity(for: security)
+//}
+//
 //RESTNetworking.fetchHistoricalDailyData(for: "sq")
 
-//let s = Security(symbol: "SQ", latestVolume: nil, companyName: nil, marketCap: nil, open: nil, low: nil, high: nil, close: nil, week52High: nil, week52Low: nil)
-//let d = ShortSqueezeDetector()
-//_ = d.analyze(s)
+if let s = DatabaseController.shared.getSecurity("sq") {
+    let d = ShortSqueezeDetector()
+    d.analyze([s])
+}
 //
 //let sqSecurity = RESTNetworking.fetchSecurity("sq")!
 //let securities = RESTNetworking.fetchBatchedSecurities(["sq", "aapl", "msft", "brk.a", "brk.b", "lyft"])

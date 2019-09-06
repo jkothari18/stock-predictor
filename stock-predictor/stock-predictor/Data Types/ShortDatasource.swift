@@ -8,10 +8,6 @@
 
 import Foundation
 
-final class ShortDatasource {
-    
-}
-
 enum ShortSqueezeStrength {
     case strong, moderate, neutral
 }
@@ -30,9 +26,17 @@ struct ShortSqueezeDatasource {
     
     var state: ShortSqueezeState?
     
-    /// GIven as a percent to be normalize across all securities
+    /// Non-absolute value based (i.e. 5.0 & -5.0 would average to 0.0)
     var averageDailyMovementPercent: Double?
     var averageDailyMovementRaw: Double?
+    var averageDailyPositiveMovementPercent: Double?
+    var averageDailyPositiveMovementRaw: Double?
+    var averageDailyNegativeMovementPercent: Double?
+    var averageDailyNegativeMovementRaw: Double?
+    
+    /// Absoute value based (i.e. -5.0 & 5.0 would average to 5.0)
+    var averageHighLowDiffPercent: Double?
+    var averageHighLowDiffRaw: Double?
     
     /// GIven as a percent to be normalize across all securities
     var averageWeeklyMovementPercent: Double?
@@ -47,7 +51,8 @@ struct ShortSqueezeDatasource {
     var longestSqueezeDuration: Int?
     var shortestSqueezeDuration: Int?
     
-    var highVolatilityDates: [Date]?
+    var highVolatilityOccurences = [HistoricDailyData]()
+    var highVolumeOccurences = [HistoricDailyData]()
     
     init(_ security: Security) {
         self.security = security

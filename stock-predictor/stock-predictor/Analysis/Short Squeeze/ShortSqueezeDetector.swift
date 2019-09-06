@@ -34,36 +34,69 @@ final class ShortSqueezeDetector: Detector {
     
     // MARK: - Raw Data Anlysis
     
-    func analyze() -> [ShortSqueezeDatasource] {
-        return analyze(securities)
+    func analyze() {
+        analyze(securities)
     }
     
-    func analyze(_ security: Security) -> ShortSqueezeDatasource {
-        return analyze([security])[0]
+    func analyze(_ security: Security) {
+        analyze([security])
     }
     
     /// Iterates through each security, adding/updating each security's shortSqueezeData: ShortSqueezeData? var and appending to an array to be optionally used.
     /// In the for-loop, it creates
-    func analyze(_ securities: [Security]) -> [ShortSqueezeDatasource] {
-        var results = [ShortSqueezeDatasource]()
+    func analyze(_ securities: [Security]) {
         for security in securities {
             var shortSqueezeData = security.shortSqueezeData != nil ? security.shortSqueezeData! : ShortSqueezeDatasource(security)
             security.shortSqueezeData = shortSqueezeData
-            results.append(shortSqueezeData)
             assignAverageMovements(on: &shortSqueezeData)
+            security.shortSqueezeData = shortSqueezeData
         }
-        
-        return results
     }
     
     private func assignAverageMovements(on shortSqueezeData: inout ShortSqueezeDatasource) {
         let security = shortSqueezeData.security
         guard let historicDailyData = DatabaseController.shared.getDailyHistoricData(for: security) else { return }
-        for el in historicDailyData.dailyData {
-            let dailyDiff: Double = el.open - el.close
-            let diffPercent = (dailyDiff / el.open) * 100
-            print(diffPercent)
+        var nonbiasPercentSum = 0.0, nonbiasRawSum = 0.0
+        var positivePercentSum = 0.0, positiveRawSum = 0.0, positiveCount = 0.0
+        var negativePercentSum = 0.0, negativeRawSum = 0.0, negativeCount = 0.0
+        
+        for dailyData in historicDailyData.dailyData {
+            let dailyDiff: Double = dailyData.open - dailyData.close
+            nonbiasRawSum += dailyDiff
+            let diffPercent = (dailyDiff / dailyData.open) * 100
+            nonbiasPercentSum += diffPercent
+            if diffPercent >= 0 {
+                positiveRawSum += dailyDiff
+                positivePercentSum += diffPercent
+                positiveCount += 1
+            } else {
+                negativeRawSum += dailyDiff
+                negativePercentSum += diffPercent
+                negativeCount += 1
+            }
+            
+            let highLowDiffRaw = abs(dailyData.high - dailyData.low)
+            let highLowDiffPercent = (highLowDiffRaw / dailyData.open) * 100
+            shortSqueezeData.averageHighLowDiffRaw = highLowDiffRaw
+            shortSqueezeData.averageHighLowDiffPercent = highLowDiffPercent
+            
+            if (abs(diffPercent) >= 5.0 || highLowDiffPercent >= 7.5) {
+                shortSqueezeData.highVolatilityOccurences.append(dailyData)
+            }
+            
+            if let averageVolume = security.averageVolume {
+                if (dailyData.volume >= averageVolume * 4) {
+                    shortSqueezeData.highVolumeOccurences.append(dailyData)
+                }
+            }
         }
+        
+        shortSqueezeData.averageDailyMovementPercent = nonbiasPercentSum / Double(historicDailyData.dailyData.count)
+        shortSqueezeData.averageDailyMovementRaw = nonbiasRawSum / Double(historicDailyData.dailyData.count)
+        shortSqueezeData.averageDailyPositiveMovementPercent = positivePercentSum / positiveCount
+        shortSqueezeData.averageDailyPositiveMovementRaw = positiveRawSum / positiveCount
+        shortSqueezeData.averageDailyNegativeMovementPercent = negativePercentSum / negativeCount
+        shortSqueezeData.averageDailyNegativeMovementRaw = negativeRawSum / negativeCount
     }
     
     // MARK: - Detector Protocol

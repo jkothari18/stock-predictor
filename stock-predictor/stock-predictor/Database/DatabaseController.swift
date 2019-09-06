@@ -66,6 +66,24 @@ final class DatabaseController {
         }
     }
     
+    func getSecurity(_ symbol: String) -> Security? {
+        guard let db = initDatabase() else { return nil }
+        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.GENERAL_INFO_TABLE_NAME) WHERE ticker LIKE '\(symbol)';"
+        let security = Security(symbol: symbol)
+        
+        execute(getDataForSecurityString, on: db) { (executeStatement) in
+            while sqlite3_step(executeStatement) == SQLITE_ROW {
+                security.companyName = String(cString: sqlite3_column_text(executeStatement, 1))
+                security.averageVolume = Int(sqlite3_column_int64(executeStatement, 2))
+                security.marketCap = Int(sqlite3_column_int64(executeStatement, 3))
+                security.week52High = sqlite3_column_double(executeStatement, 4)
+                security.week52Low = sqlite3_column_double(executeStatement, 5)
+            }
+        }
+        
+        return security
+    }
+    
     // MARK: - Historical Data
     
     func updateHistoricalData(for security: Security) {
