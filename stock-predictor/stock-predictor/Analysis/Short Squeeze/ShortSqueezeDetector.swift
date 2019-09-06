@@ -34,30 +34,35 @@ final class ShortSqueezeDetector: Detector {
     
     // MARK: - Raw Data Anlysis
     
-    func analyze() -> [ShortSqueezeData] {
+    func analyze() -> [ShortSqueezeDatasource] {
         return analyze(securities)
     }
     
-    func analyze(_ security: Security) -> ShortSqueezeData {
+    func analyze(_ security: Security) -> ShortSqueezeDatasource {
         return analyze([security])[0]
     }
     
-    func analyze(_ securities: [Security]) -> [ShortSqueezeData] {
-        var results = [ShortSqueezeData]()
+    /// Iterates through each security, adding/updating each security's shortSqueezeData: ShortSqueezeData? var and appending to an array to be optionally used.
+    /// In the for-loop, it creates
+    func analyze(_ securities: [Security]) -> [ShortSqueezeDatasource] {
+        var results = [ShortSqueezeDatasource]()
         for security in securities {
-            var shortSqueezeData = ShortSqueezeData(security)
+            var shortSqueezeData = security.shortSqueezeData != nil ? security.shortSqueezeData! : ShortSqueezeDatasource(security)
+            security.shortSqueezeData = shortSqueezeData
+            results.append(shortSqueezeData)
             assignAverageMovements(on: &shortSqueezeData)
         }
         
-        results.append(ShortSqueezeData(Security(symbol: "AAPL", latestVolume: nil, companyName: nil, marketCap: nil, open: nil, low: nil, high: nil, close: nil, week52High: nil, week52Low: nil)))
         return results
     }
     
-    private func assignAverageMovements(on shortSqueezeData: inout ShortSqueezeData) {
+    private func assignAverageMovements(on shortSqueezeData: inout ShortSqueezeDatasource) {
         let security = shortSqueezeData.security
         guard let historicDailyData = DatabaseController.shared.getDailyHistoricData(for: security) else { return }
         for el in historicDailyData.dailyData {
-            print(el.date)
+            let dailyDiff: Double = el.open - el.close
+            let diffPercent = (dailyDiff / el.open) * 100
+            print(diffPercent)
         }
     }
     

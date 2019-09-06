@@ -9,30 +9,33 @@
 import Foundation
 import SQLite3
 
-let s = Security(symbol: "SQ", latestVolume: nil, companyName: nil, marketCap: nil, open: nil, low: nil, high: nil, close: nil, week52High: nil, week52Low: nil)
-let d = ShortSqueezeDetector()
-_ = d.analyze(s)
+let testSecurity = Security(symbol: "amd")
 
-let sqSecurity = RESTNetworking.fetchSecurity("sq")!
-let securities = RESTNetworking.fetchBatchedSecurities(["sq", "aapl", "msft", "brk.a", "brk.b", "lyft"])
-let dateFormatter = Date.getBasicDateFormatter()
-let result = dateFormatter.string(from: Date())
+//RESTNetworking.fetchHistoricalDailyData(for: "sq")
 
-let database = DatabaseController.shared
-if let db = database.initDatabase() {
-    let createTableString = "CREATE TABLE IF NOT EXISTS \(DatabaseController.DAILY_TABLE_NAME) ( date CHAR(255), ticker CHAR(255), open_price REAL);"
-    database.createTable(inDatabase: db, withString: createTableString)
-    
-    // TODO: - This does not work. Fix it.
-    let replaceString = "REPLACE INTO daily_stock (date, ticker, open_price) VALUES (?, ?, ?);"
-    for security in securities {
-        database.replace(replaceString, into: db, withAction: {(insertStatement: OpaquePointer?) -> Void in
-            let date: NSString = NSString(string: result)
-            let ticker: NSString = NSString(string: security.symbol)
-            let open_price: Double = security.open ?? 0
-            sqlite3_bind_text(insertStatement, 1, date.utf8String, -1, nil)
-            sqlite3_bind_text(insertStatement, 2, ticker.utf8String, -1, nil)
-            sqlite3_bind_double(insertStatement, 3, open_price)
-        })
-    }
-}
+//let s = Security(symbol: "SQ", latestVolume: nil, companyName: nil, marketCap: nil, open: nil, low: nil, high: nil, close: nil, week52High: nil, week52Low: nil)
+//let d = ShortSqueezeDetector()
+//_ = d.analyze(s)
+//
+//let sqSecurity = RESTNetworking.fetchSecurity("sq")!
+//let securities = RESTNetworking.fetchBatchedSecurities(["sq", "aapl", "msft", "brk.a", "brk.b", "lyft"])
+//let dateFormatter = Date.getBasicDateFormatter()
+//let result = dateFormatter.string(from: Date())
+//
+//let database = DatabaseController.shared
+//if let db = database.initDatabase() {
+//    let createTableString = "CREATE TABLE IF NOT EXISTS \(DatabaseController.DAILY_TABLE_NAME) ( date CHAR(255), ticker CHAR(255), open_price REAL);"
+//    database.createTable(inDatabase: db, withString: createTableString)
+//    // TODO: - This only kinda works.
+//    let replaceString = "REPLACE INTO daily_stock (date, ticker, open_price) VALUES (?, ?, ?);"
+//    for security in securities {
+//        database.replace(replaceString, into: db, withAction: {(insertStatement: OpaquePointer?) -> Void in
+//            let date: NSString = NSString(string: result)
+//            let ticker: NSString = NSString(string: security.symbol)
+//            let open_price: Double = security.open ?? 0
+//            sqlite3_bind_text(insertStatement, 1, date.utf8String, -1, nil)
+//            sqlite3_bind_text(insertStatement, 2, ticker.utf8String, -1, nil)
+//            sqlite3_bind_double(insertStatement, 3, open_price)
+//        })
+//    }
+//}

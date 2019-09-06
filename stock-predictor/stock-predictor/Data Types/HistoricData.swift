@@ -11,25 +11,19 @@ import Foundation
 struct HistoricData {
     
     let security: Security
-    
     var dailyData: [HistoricDailyData] = []
     
 }
 
-struct HistoricDailyData {
+struct HistoricDailyData: Decodable {
     
     var ticker: String
+    var date: Date
     
     var open: Double
-    
     var close: Double
-    
     var volume: Int
-    
     var low: Double
-    
     var high: Double
-    
-    var date: Date
     
 }

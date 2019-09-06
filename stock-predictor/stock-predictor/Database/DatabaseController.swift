@@ -9,11 +9,18 @@
 import Foundation
 import SQLite3
 
+enum DatabaseMode {
+    case single, continuous
+}
+
 final class DatabaseController {
     
     static let DAILY_TABLE_NAME = "daily_stock"
+    static let HISTORICAL_DAILY_DATA_TABLE = "historical_daily_data"
     
     static let shared = DatabaseController()
+    
+    var mode: DatabaseMode = .single
     
     func initDatabase() -> OpaquePointer? {
         var db: OpaquePointer? = nil
@@ -62,7 +69,6 @@ final class DatabaseController {
     
     // TODO: - Implement callback for the while loop part
     func execute(_ statement: String, on db: OpaquePointer, withAction handler: (OpaquePointer?) -> Void) {
-        print(statement)
         var executeStatement: OpaquePointer? = nil
         let prepareResult = sqlite3_prepare_v2(db, statement, -1, &executeStatement, nil)
         if prepareResult == SQLITE_OK {
@@ -75,16 +81,20 @@ final class DatabaseController {
     // TODO: - Turn this into a batched request to vastly improve SQLite performance
     func getDailyHistoricData(for security: Security) -> HistoricData? {
         guard let db = initDatabase() else { return nil }
-        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.DAILY_TABLE_NAME) WHERE ticker LIKE '\(security.symbol)'"
+        let getDataForSecurityString = "SELECT * FROM \(DatabaseController.HISTORICAL_DAILY_DATA_TABLE) WHERE ticker LIKE '\(security.symbol)';"
         
         var dailyData = [HistoricDailyData]()
         execute(getDataForSecurityString, on: db) { (executeStatement) in
             while sqlite3_step(executeStatement) == SQLITE_ROW {
                 let dateFormatter = Date.getBasicDateFormatter()
-                guard let date = dateFormatter.date(from: String(cString: sqlite3_column_text(executeStatement, 0))) else { return }
-                let ticker = String(cString: sqlite3_column_text(executeStatement, 1))
+                let ticker = String(cString: sqlite3_column_text(executeStatement, 0))
+                guard let date = dateFormatter.date(from: String(cString: sqlite3_column_text(executeStatement, 1))) else { return }
                 let open = sqlite3_column_double(executeStatement, 2)
-                let historicData = HistoricDailyData(ticker: ticker, open: open, close: 0, volume: 0, low: 0, high: 0, date: date)
+                let high = sqlite3_column_double(executeStatement, 3)
+                let low = sqlite3_column_double(executeStatement, 4)
+                let close = sqlite3_column_double(executeStatement, 5)
+                let volume = sqlite3_column_int(executeStatement, 6)
+                let historicData = HistoricDailyData(ticker: ticker, date: date, open: open, close: close, volume: Int(volume), low: low, high: high)
                 dailyData.append(historicData)
             }
         }
@@ -94,8 +104,29 @@ final class DatabaseController {
         return historicData
     }
     
-    private func parseRawSQLHistoricData(_ rawData: Any) -> [HistoricData] {
-        return []
+    func updateHistoricalData(for security: Security) {
+        guard let historicalData = security.historicalData else { return }
+        guard let db = initDatabase() else { return }
+        let createTableString = "CREATE TABLE IF NOT EXISTS \(DatabaseController.HISTORICAL_DAILY_DATA_TABLE) ( ticker CHAR(255), date CHAR(255), open REAL, high REAL, low REAL, close REAL, volume INTEGER, UNIQUE (ticker, date) ON CONFLICT REPLACE);"
+        createTable(inDatabase: db, withString: createTableString)
+        
+        let replaceString = "INSERT INTO \(DatabaseController.HISTORICAL_DAILY_DATA_TABLE) (ticker, date, open, high, low, close, volume) VALUES (?, ?, ?, ?, ?, ?, ?);"
+        for dailyData in historicalData.dailyData {
+            replace(replaceString, into: db, withAction: {(insertStatement: OpaquePointer?) -> Void in
+                let ticker: NSString = NSString(string: security.symbol)
+                let formatter = Date.getBasicDateFormatter()
+                let result = formatter.string(from: dailyData.date)
+                let date: NSString = NSString(string: result)
+                
+                sqlite3_bind_text(insertStatement, 1, ticker.utf8String, -1, nil)
+                sqlite3_bind_text(insertStatement, 2, date.utf8String, -1, nil)
+                sqlite3_bind_double(insertStatement, 3, dailyData.open)
+                sqlite3_bind_double(insertStatement, 4, dailyData.high)
+                sqlite3_bind_double(insertStatement, 5, dailyData.low)
+                sqlite3_bind_double(insertStatement, 6, dailyData.close)
+                sqlite3_bind_int(insertStatement, 7, Int32(dailyData.volume))
+            })
+        }
     }
     
 }

@@ -20,7 +20,7 @@ enum ShortSqueezeState {
     case nonexistant, early, rampUp, imminent
 }
 
-struct ShortSqueezeData {
+struct ShortSqueezeDatasource {
     
     let security: Security
     
